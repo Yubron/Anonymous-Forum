@@ -10,7 +10,7 @@ export class BoardController {
 
   @Get('/')
   getAll(@Query("page") page: number, @Query('searchType') searchType: string, @Query('searchKeyword') searchKeyword: string) {
-    return this.boardService.getAll(page=1, searchType, searchKeyword)
+    return this.boardService.getAll(page=1, searchType, searchKeyword='')
   }
 
   @Get('/:id')

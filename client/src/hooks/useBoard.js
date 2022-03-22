@@ -19,5 +19,7 @@ const getBoardById = ({id}) => {
 }
 
 export const useGetBoardById = ({id}) => {
-  return useQuery(['getBoard', id], () => getBoardById({id}))
+  return useQuery(['getBoard', id], () => getBoardById({id}), {
+    select: data => data.data[0],
+  })
 }

@@ -1,15 +1,12 @@
 import React from 'react'
-import { useQuery } from 'react-query'
-import axios from 'axios';
 import LoadingPage from './Loading.page'
 import { useParams } from "react-router";
+import { useGetBoardById } from '../hooks/useBoard';
 
 const DetailPage = () => {
   const { id } = useParams();
   
-  const { isLoading, data } = useQuery('getBoardById', () => {
-    return axios.get(`http://localhost:4000/board/${id}`)
-  })
+  const {isLoading, data } = useGetBoardById({id})
 
   if(isLoading) {
     return <LoadingPage />
@@ -17,7 +14,7 @@ const DetailPage = () => {
 
   return (
     <div>
-      Detail.page
+      {data.data[0].title}
     </div>
   )
 }

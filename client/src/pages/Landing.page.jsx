@@ -1,15 +1,11 @@
 import React from 'react'
-import { useQuery } from 'react-query'
-import axios from 'axios';
 import LoadingPage from './Loading.page';
-import styled from 'styled-components'
 import { DeleteButton, MainContainer, Table, TD, Title, TR, UpdateButton } from '../components/common';
 import { useNavigate } from 'react-router-dom';
+import { useGetBoardAll } from '../hooks/useBoard';
 
 const LandingPage = () => {
-  const { isLoading, data } = useQuery('getAllBoard', () => {
-    return axios.get('http://localhost:4000/board')
-  })
+  const { isLoading, data } = useGetBoardAll({})
 
   const navigate = useNavigate();
   const goRouteId = (id) => {

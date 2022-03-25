@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { client } from "../utils/axios";
 
 const createReply = (writer, password, content, boardId, parentReplyId) => {
@@ -37,4 +37,33 @@ const getReplies = (boardId) => {
 export const useGetReplies = (boardId) => {
   return useQuery(['getReplies', boardId], () => getReplies(boardId), {
   })
+}
+
+const deleteReply = (replyId,password) => {
+  return client({
+    method: 'delete',
+    url: `/reply/${replyId}`,
+    data: {password}
+  })
+}
+
+export const useDeleteReply = (boardId) => {
+  const queryClient = useQueryClient()
+  
+  return useMutation(
+    deleteReplyDto => {
+      return deleteReply(
+        deleteReplyDto.replyId,
+        deleteReplyDto.password
+      )
+    },
+    {
+      onSuccess: () => {        
+        queryClient.invalidateQueries(['getReplies', boardId])
+      },
+      onError: () => {
+        alert('비밀번호가 틀렸습니다.')
+      }
+    },
+  )
 }

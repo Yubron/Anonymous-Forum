@@ -60,7 +60,7 @@ export class ReplyService {
           this.replyRepository.deleteReply(id)
         }
       } catch(e) {
-        
+        throw e
       }
     }
 

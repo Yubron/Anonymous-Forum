@@ -4,7 +4,7 @@ import LoadingPage from './Loading.page'
 import { useParams } from "react-router";
 import { useDeleteBoard, useGetBoardById } from '../hooks/useBoard';
 import { DeleteButton, MainContainer, Title, UpdateButton } from '../components/common';
-import { useCreateReply, useGetReplies } from '../hooks/useReply';
+import { useCreateReply, useDeleteReply, useGetReplies } from '../hooks/useReply';
 
 const DetailPage = () => {
   const { id } = useParams();
@@ -22,6 +22,7 @@ const DetailPage = () => {
 
   const createReply = useCreateReply()
   const deleteBoard = useDeleteBoard()
+  const deleteReply = useDeleteReply(id)
 
   const replyHandler = () => {
     createReply.mutate(createReplyDto)
@@ -46,6 +47,16 @@ const DetailPage = () => {
     
     deleteBoard.mutate(deleteBoardDto)
   }
+  const deleteReplyHandler = (e) => {
+    let password = prompt('암호를 입력해주세요')
+    const deleteReplyDto = {
+      replyId: e.target.id,
+      password
+    }
+    
+    deleteReply.mutate(deleteReplyDto)
+  }
+
 
   const {isLoading: isBoardLoading, data: board } = useGetBoardById(id)
   const {isLoading: isReplyLoading, data: replies} = useGetReplies(id)
@@ -98,6 +109,14 @@ const DetailPage = () => {
                   <pre>
                     {reply.content}
                   </pre>
+                  {
+                    reply.isDelete ? '' : 
+                    <>
+                      <UpdateButton> 수정 </UpdateButton>
+                      <DeleteButton id={reply.id} onClick={deleteReplyHandler}> 삭제 </DeleteButton>
+                    </>
+                  }
+                  
                 </div>
               )
             }

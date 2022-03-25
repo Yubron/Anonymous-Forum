@@ -37,13 +37,13 @@ export class BoardService {
       }
     }
 
-    async checkPassword(id: number, body: {password: string}) {
+    async checkPassword(id: number, password: string) {
       try {
         const targetBoard = (await this.boardRepository.getOneIncludePassword(id))[0]
         if(!targetBoard) {
           throw new Error('does not exist')
         }
-        if(await this.passwordCompare({plain: body.password, encrypt: targetBoard.password})) {
+        if(await this.passwordCompare({plain: password, encrypt: targetBoard.password})) {
           return true
         } else {
           throw new Error('password is wrong !')
@@ -61,11 +61,14 @@ export class BoardService {
       }
     }
 
-    deleteBoard(id: number, deleteBoardDto: DeleteBoardDto) {
-      try {        
-        this.boardRepository.deleteBoard(id)
+    async deleteBoard(id: number, deleteBoardDto: DeleteBoardDto) {
+      try {
+        const { password } = deleteBoardDto
+        if(await this.checkPassword(id, password)) {
+          this.boardRepository.deleteBoard(id)
+        }
       } catch(e) {
-        
+        throw e
       }
     }
 

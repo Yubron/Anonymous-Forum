@@ -2,12 +2,13 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import LoadingPage from './Loading.page'
 import { useParams } from "react-router";
-import { useGetBoardById } from '../hooks/useBoard';
-import { MainContainer, Title } from '../components/common';
+import { useDeleteBoard, useGetBoardById } from '../hooks/useBoard';
+import { DeleteButton, MainContainer, Title, UpdateButton } from '../components/common';
 import { useCreateReply, useGetReplies } from '../hooks/useReply';
 
 const DetailPage = () => {
   const { id } = useParams();
+  
   const [createReplyDto, setCreateReplyDto ] = useState({
     content: 'content',
     writer: 'writer',
@@ -15,13 +16,13 @@ const DetailPage = () => {
     boardId: id,
     parentReplyId: null,
   })
-
   const changeHandler = (e) => {
     setCreateReplyDto({...createReplyDto, [e.target.name]: e.target.value })
   }
 
   const createReply = useCreateReply()
-  
+  const deleteBoard = useDeleteBoard()
+
   const replyHandler = () => {
     createReply.mutate(createReplyDto)
     resetReplyInput()
@@ -36,7 +37,15 @@ const DetailPage = () => {
       parentReplyId: null,
     })
   }
-
+  const deleteBoardHandler = () => {
+    let password = prompt('암호를 입력해주세요')
+    const deleteBoardDto = {
+      boardId: id,
+      password
+    }
+    
+    deleteBoard.mutate(deleteBoardDto)
+  }
 
   const {isLoading: isBoardLoading, data: board } = useGetBoardById(id)
   const {isLoading: isReplyLoading, data: replies} = useGetReplies(id)
@@ -45,16 +54,28 @@ const DetailPage = () => {
   if(isBoardLoading || isReplyLoading) {
     return <LoadingPage />
   }
-  console.log(replies.data)
+
+  if(!board) {
+    return <h2> 존재하지 않는 글입니다.</h2>
+  }
+
   return (
     <MainContainer>
       <BoardDetailContainer>
         <Title> {board.title} </Title>
         <Writer> 작성자 : {board.writer} </Writer>
+        
+        <UpdateButton> 수정 </UpdateButton>
+        <DeleteButton id={id} onClick={deleteBoardHandler}> 삭제 </DeleteButton>
 
-        <Content> {board.content} </Content>
+        <Content> 
+          <pre>
+            {board.content}
+          </pre> 
+        </Content>
       </BoardDetailContainer>
       <h2> REPLY </h2>
+
       <ReplyMainContainer>
         <ReplyInputContainer>
           <ReplyContentInput type={'text'} name={'content'} value={createReplyDto.content} onChange={changeHandler}/>
@@ -73,7 +94,10 @@ const DetailPage = () => {
             if(reply.parentReplyId === null) {
               return (
                 <div>
-                  <p> {reply.writer} : {reply.content} </p>
+                  <p> {reply.writer} </p>
+                  <pre>
+                    {reply.content}
+                  </pre>
                 </div>
               )
             }

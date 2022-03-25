@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { client } from "../utils/axios";
 
@@ -9,7 +9,7 @@ const getBoardAll = ({ page=1, searchType, searchKeyword }) => {
 };
 
 export const useGetBoardAll = ({ page=1, searchType, searchKeyword}) => {
-  return useQuery(['getAllBoard', page, searchType, searchKeyword ], () => getBoardAll({ page, searchType, searchKeyword }), {
+  return useQuery(['getAllBoard'], () => getBoardAll({ page, searchType, searchKeyword }), {
   });
 };
 
@@ -50,5 +50,36 @@ export const useCreateBoard = () => {
         navigate('/')
       },
     }
+  )
+}
+
+const deleteBoard = (boardId,password) => {
+  return client({
+    method: 'delete',
+    url: `/board/${boardId}`,
+    data: {password}
+  })
+}
+
+export const useDeleteBoard = () => {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  return useMutation(
+    deleteBoardDto => {
+      return deleteBoard(
+        deleteBoardDto.boardId,
+        deleteBoardDto.password
+      )
+    },
+    {
+      onSuccess: () => {        
+        queryClient.invalidateQueries('getAllBoard')
+        navigate('/')
+      },
+      onError: () => {
+        alert('비밀번호가 틀렸습니다.')
+      }
+    },
   )
 }

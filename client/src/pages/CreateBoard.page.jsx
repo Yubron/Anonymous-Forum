@@ -31,7 +31,7 @@ const CreateBoardPage = () => {
         <input type={'text'} name={'title'} value={createBoardDto.title} onChange={changeHandler}/>
 
         <label> 내용 </label>
-        <input type={'text'} name={'content'} value={createBoardDto.content} onChange={changeHandler}/>
+        <textarea type={'text'} name={'content'} value={createBoardDto.content} onChange={changeHandler}/>
 
         <button onClick={() => createBoard.mutate(createBoardDto)}> 등록 </button>
       </CreateBoardContainer>
@@ -42,7 +42,7 @@ const CreateBoardPage = () => {
 export default CreateBoardPage
 
 const CreateBoardContainer = styled.div`
-  width: 30%;
+  width: 70%;
   display: flex;
   flex-direction: column;
 `

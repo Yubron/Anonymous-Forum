@@ -19,8 +19,8 @@ export class BoardController {
   }
 
   @Get('/check-password/:id')
-  checkPassword(@Param("id") id: number, @Body() body: {password: string}) {
-    return this.boardService.checkPassword(id, body)
+  checkPassword(@Param("id") id: number, @Body("password") password: string) {
+    return this.boardService.checkPassword(id, password)
   }
 
   @Post('/')

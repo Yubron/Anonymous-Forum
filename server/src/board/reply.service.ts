@@ -4,10 +4,15 @@ import { CreateReplyDto } from './dtos/create-reply.dto';
 import * as bcrypt from 'bcryptjs';
 import { DeleteReplyDto } from './dtos/delete-reply.dto';
 import { UpdateReplyDto } from './dtos/update-reply.dto';
+import { KeywordRepository } from 'src/keyword/repositories/keyword.repository';
+import { notifyKeyword } from './utils/function';
 
 @Injectable()
 export class ReplyService {
-  constructor(private readonly replyRepository: ReplyRepository) {}
+  constructor(
+    private readonly replyRepository: ReplyRepository,
+    private readonly keywordRepostiory: KeywordRepository,
+  ) {}
     getAll(boardId: number, page: number) {
       try {
         return this.replyRepository.getAll(boardId, page)
@@ -22,8 +27,11 @@ export class ReplyService {
 
         const hashedPassword = await this.passwordEncryption(createReplyDto);
         createReplyDto.password = hashedPassword;
-
-        await this.replyRepository.createReply(createReplyDto);
+        this.replyRepository.createReply(createReplyDto);
+        
+        const contentKeyword = createReplyDto.content.split(' ')
+        const users = await this.keywordRepostiory.findUser(contentKeyword);
+        notifyKeyword(users)
       } catch(e) {
         throw e
       }

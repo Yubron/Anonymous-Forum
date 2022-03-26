@@ -4,10 +4,15 @@ import { CreateBoardDto } from './dtos/create-board.dto';
 import * as bcrypt from 'bcryptjs';
 import { DeleteBoardDto } from './dtos/delete-board.dto';
 import { UpdateBoardDto } from './dtos/update-board.dto';
+import { KeywordRepository } from 'src/keyword/repositories/keyword.repository';
+import { notifyKeyword } from './utils/function';
 
 @Injectable()
 export class BoardService {
-  constructor(private readonly boardRepository: BoardRepository) {}
+  constructor(
+    private readonly boardRepository: BoardRepository,
+    private readonly keywordRepostiory: KeywordRepository,
+  ){}
     getAll(page: number, searchType: string, searchKeyword: string) {
       try {
         return this.boardRepository.getAll(page, searchType, searchKeyword)
@@ -30,8 +35,11 @@ export class BoardService {
 
         const hashedPassword = await this.passwordEncryption(createBoardDto);
         createBoardDto.password = hashedPassword;
-
         this.boardRepository.createBoard(createBoardDto);
+        
+        const contentKeyword = createBoardDto.content.split(' ')
+        const users = await this.keywordRepostiory.findUser(contentKeyword);
+        notifyKeyword(users)
       } catch(e) {
         
       }

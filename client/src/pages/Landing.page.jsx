@@ -1,18 +1,33 @@
-import React from 'react'
+import React, { useState } from 'react'
 import LoadingPage from './Loading.page';
 import { MainContainer, Table, TD, Title, TR, WriteButton } from '../components/common';
 import { useNavigate } from 'react-router-dom';
 import { useGetBoardAll } from '../hooks/useBoard';
+import styled from 'styled-components';
 
 const LandingPage = () => {
-  const { isLoading, data } = useGetBoardAll({})
-  const navigate = useNavigate();
+  const [searchDto, setSearchDto] = useState({
+    searchType: '',
+    searchKeyword: '',
+  })
+  const [page, setPage] = useState(1)
+  const navigate = useNavigate()
+
+  const { isLoading, data } = useGetBoardAll({ page, searchType: searchDto.searchType, searchKeyword: searchDto.searchKeyword })
+  // const { isLoading, data } = useGetBoardAll({})
+  
+  const changeHandler = (e) => {
+    setSearchDto({...searchDto, [e.target.name]: e.target.value })
+  }
+
+  const searchHandler = () => {
+
+  }
 
   if(isLoading) {
     return <LoadingPage />
   }
   
-
   return (
     <MainContainer>
       <Title> Board List </Title>
@@ -37,6 +52,14 @@ const LandingPage = () => {
         </Table> 
       : <h2> NO DATA </h2> 
       }
+      <SearchBarContainer>
+        <select>
+          <option> 제목 </option>
+          <option> 작성자 </option>
+        </select>
+        <input type={'text'} name={'searchKeyword'} value={searchDto.searchKeyword} onChange={changeHandler} /> 
+        <button onClick={searchHandler}> 검색 </button>
+      </SearchBarContainer>
       <WriteButton onClick={() => navigate('/create')}> 등록 </WriteButton>
     </MainContainer>
   )
@@ -44,3 +67,4 @@ const LandingPage = () => {
 
 export default LandingPage
 
+const SearchBarContainer = styled.div``

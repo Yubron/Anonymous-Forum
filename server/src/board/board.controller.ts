@@ -6,11 +6,11 @@ import { UpdateBoardDto } from './dtos/update-board.dto';
 
 @Controller('board')
 export class BoardController {
-  constructor(private readonly boardService: BoardService) {}
+  constructor(private readonly boardService: BoardService) { }
 
   @Get('/')
-  getAll(@Query("page") page: number, @Query('searchType') searchType: string, @Query('searchKeyword') searchKeyword: string) {
-    return this.boardService.getAll(page=1, searchType, searchKeyword='')
+  getAll(@Query("page") page: string = '1', @Query('searchType') searchType: string, @Query('searchKeyword') searchKeyword: string = '') {
+    return this.boardService.getAll(parseInt(page), searchType, searchKeyword)
   }
 
   @Get('/:id')

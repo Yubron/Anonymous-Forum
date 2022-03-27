@@ -6,24 +6,33 @@ import { useGetBoardAll } from '../hooks/useBoard';
 import styled from 'styled-components';
 
 const LandingPage = () => {
+  const navigate = useNavigate()
+
+  const [searchType, setSearchType] = useState('title')
+  const [searchKeyword, setSearchKeyword] = useState('')
   const [searchDto, setSearchDto] = useState({
     searchType: '',
     searchKeyword: '',
   })
   const [page, setPage] = useState(1)
-  const navigate = useNavigate()
 
-  const { isLoading, data } = useGetBoardAll({ page, searchType: searchDto.searchType, searchKeyword: searchDto.searchKeyword })
-  // const { isLoading, data } = useGetBoardAll({})
-  
-  const changeHandler = (e) => {
-    setSearchDto({...searchDto, [e.target.name]: e.target.value })
-  }
+  const { isLoading, data } = useGetBoardAll(page, searchDto.searchType, searchDto.searchKeyword)
 
   const searchHandler = () => {
-
+    setSearchDto({
+      searchType: searchType,
+      searchKeyword: searchKeyword
+    })
+    setSearchKeyword('')
   }
-
+  const paging = () => {
+    const result = []
+    for(let i = 0; i < data.totalPage; i++) {
+      const page = i+1
+      result.push(<button id={page} onClick={() => setPage(page)}> {page} </button>)
+    }
+    return result
+  }
   if(isLoading) {
     return <LoadingPage />
   }
@@ -31,7 +40,7 @@ const LandingPage = () => {
   return (
     <MainContainer>
       <Title> Board List </Title>
-      {data.data.length !== 0 ? 
+      {data.product.length !== 0 ? 
         <Table>
           <TR>
             <TD> No </TD>
@@ -39,7 +48,7 @@ const LandingPage = () => {
             <TD> 작성자 </TD>
           </TR>
           {
-            data.data.map(board => {
+            data.product.map(board => {
               return (
                 <TR>
                   <TD style={{width: '50px'}}> {board.id}</TD>
@@ -53,13 +62,16 @@ const LandingPage = () => {
       : <h2> NO DATA </h2> 
       }
       <SearchBarContainer>
-        <select>
-          <option> 제목 </option>
-          <option> 작성자 </option>
+        <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+          <option value={'title'}> 제목 </option>
+          <option value={'writer'}> 작성자 </option>
         </select>
-        <input type={'text'} name={'searchKeyword'} value={searchDto.searchKeyword} onChange={changeHandler} /> 
+        <input type={'text'} value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)}/> 
         <button onClick={searchHandler}> 검색 </button>
       </SearchBarContainer>
+      <PageContainer>
+        {paging()}
+      </PageContainer>
       <WriteButton onClick={() => navigate('/create')}> 등록 </WriteButton>
     </MainContainer>
   )
@@ -68,3 +80,4 @@ const LandingPage = () => {
 export default LandingPage
 
 const SearchBarContainer = styled.div``
+const PageContainer = styled.div``

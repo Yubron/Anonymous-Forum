@@ -8,7 +8,6 @@ import { useCreateReply, useDeleteReply, useGetReplies } from '../hooks/useReply
 
 const DetailPage = () => {
   const { id } = useParams();
-  
   const [createReplyDto, setCreateReplyDto ] = useState({
     content: 'content',
     writer: 'writer',
@@ -16,6 +15,7 @@ const DetailPage = () => {
     boardId: id,
     parentReplyId: null,
   })
+  
   const changeHandler = (e) => {
     setCreateReplyDto({...createReplyDto, [e.target.name]: e.target.value })
   }
@@ -40,24 +40,31 @@ const DetailPage = () => {
   }
   const deleteBoardHandler = () => {
     let password = prompt('암호를 입력해주세요')
-    const deleteBoardDto = {
-      boardId: id,
-      password
-    }
     
-    deleteBoard.mutate(deleteBoardDto)
+    if(password !== null) {
+      const deleteBoardDto = {
+        boardId: id,
+        password
+      }
+      
+      deleteBoard.mutate(deleteBoardDto)
+    }
   }
   const deleteReplyHandler = (e) => {
     let password = prompt('암호를 입력해주세요')
-    const deleteReplyDto = {
-      replyId: e.target.id,
-      password
-    }
     
-    deleteReply.mutate(deleteReplyDto)
+    if(password !== null) {
+      const deleteReplyDto = {
+        replyId: e.target.id,
+        password
+      }
+      
+      deleteReply.mutate(deleteReplyDto)
+    }
   }
-
-
+  const updateBoardHandler = () => {
+    
+  }
   const {isLoading: isBoardLoading, data: board } = useGetBoardById(id)
   const {isLoading: isReplyLoading, data: replies} = useGetReplies(id)
 
@@ -76,7 +83,7 @@ const DetailPage = () => {
         <Title> {board.title} </Title>
         <Writer> 작성자 : {board.writer} </Writer>
         
-        <UpdateButton> 수정 </UpdateButton>
+        <UpdateButton id={id} onClick={updateBoardHandler}> 수정 </UpdateButton>
         <DeleteButton id={id} onClick={deleteBoardHandler}> 삭제 </DeleteButton>
 
         <Content> 

@@ -8,8 +8,17 @@ const getBoardAll = ({ page=1, searchType, searchKeyword }) => {
   });
 };
 
-export const useGetBoardAll = ({ page=1, searchType, searchKeyword}) => {
-  return useQuery(['getAllBoard'], () => getBoardAll({ page, searchType, searchKeyword }), {
+export const useGetBoardAll = ( page=1, searchType, searchKeyword) => {
+  return useQuery(['getAllBoard', page, searchType, searchKeyword], () => getBoardAll({ page, searchType, searchKeyword }), {
+    select: data => {
+      const count = data.data.count
+      
+      return {
+        product: data.data.products,
+        totalPage: Math.ceil(count / 10)
+      }
+      
+    }
   });
 };
 

@@ -7,3 +7,4 @@ export const TR = styled.tr``
 export const TD = styled.td``
 export const UpdateButton = styled.button``
 export const DeleteButton = styled.button``
+export const WriteButton = styled.button``

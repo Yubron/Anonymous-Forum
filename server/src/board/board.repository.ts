@@ -6,7 +6,7 @@ import { UpdateBoardDto } from "./dtos/update-board.dto";
 @EntityRepository(Board)
 export class BoardRepository extends Repository<Board> {
   getAll(page: number, searchType: string, searchKeyword: string) {
-    const offset = 10 * (page-1)
+    const offset = 10 * (page - 1)
     return this.query(
       `
         SELECT id, title, content, writer, createDate, updateDate 
@@ -14,6 +14,16 @@ export class BoardRepository extends Repository<Board> {
         ${searchType ? `WHERE ${searchType} LIKE '%${searchKeyword}%'` : ``}
         ORDER BY id desc
         LIMIT ${offset}, 10
+      `
+    )
+  }
+
+  getAllCount(searchType: string, searchKeyword: string) {
+    return this.query(
+      `
+        SELECT COUNT(*) as count
+        FROM board
+        ${searchType ? `WHERE ${searchType} LIKE '%${searchKeyword}%'` : ``}
       `
     )
   }
@@ -27,7 +37,7 @@ export class BoardRepository extends Repository<Board> {
       `
     )
   }
-  
+
   getOneIncludePassword(id: number) {
     return this.query(
       `
@@ -55,7 +65,7 @@ export class BoardRepository extends Repository<Board> {
     for (const [key, value] of Object.entries(updateBoardDto)) {
       setList.push(`${key} = '${value}'`)
     }
-    
+
     return this.query(
       `
         UPDATE board

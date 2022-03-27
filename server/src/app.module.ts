@@ -5,6 +5,7 @@ import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BoardModule } from './board/board.module';
+import { KeywordModule } from './keyword/keyword.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -29,6 +30,7 @@ import configuration from './config/configuration';
       }),
     }),
     BoardModule,
+    KeywordModule,
   ],
   controllers: [AppController],
   providers: [AppService],
